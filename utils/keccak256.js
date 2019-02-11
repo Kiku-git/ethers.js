@@ -1,12 +1,8 @@
 'use strict';
-
-var sha3 = require('js-sha3');
-
-var convert = require('./convert.js');
-
+Object.defineProperty(exports, "__esModule", { value: true });
+var sha3 = require("js-sha3");
+var bytes_1 = require("./bytes");
 function keccak256(data) {
-    data = convert.arrayify(data);
-    return '0x' + sha3.keccak_256(data);
+    return '0x' + sha3.keccak_256(bytes_1.arrayify(data));
 }
-
-module.exports = keccak256;
+exports.keccak256 = keccak256;

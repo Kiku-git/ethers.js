@@ -1,53 +1,68 @@
 {
   "name": "ethers",
-  "version": "3.0.18",
+  "version": "4.0.24",
   "description": "Ethereum wallet library.",
-  "main": "index.js",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "scripts": {
+    "build": "npm run dist-version && tsc -p ./tsconfig.json",
+    "auto-build": "npm run build -- -w",
+    "dist": "npm run dist-version && npm run build && gulp default minified shims && npm run dist-types",
+    "dist-test": "gulp default-test minified-test shims",
+    "dist-bip39": "gulp bip39-es bip39-fr bip39-it bip39-ja bip39-ko bip39-zh",
+    "dist-types": "dts-bundle --name ethers --main ./index.d.ts --out ./dist/ethers.types.txt",
+    "dist-version": "node -e \"let v = require('./package.json').version; require('fs').writeFileSync('./src.ts/_version.ts', 'export const version = \\\"' + v +'\\\";\\n')\"",
+    "eslint": "eslint index.js contracts/*.js providers/*.js utils/*.js wallet/*.js wordlists/*.js",
     "test": "if [ \"$RUN_PHANTOMJS\" = \"1\" ]; then npm run-script test-phantomjs; else npm run-script test-node; fi",
-    "test-node": "./node_modules/.bin/mocha tests/test-*.js",
-    "test-phantomjs": "./node_modules/.bin/grunt dist && ./node_modules/.bin/grunt --gruntfile Gruntfile-test.js dist && phantomjs --web-security=false ./node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js ./tests/test.html",
-    "version": "grunt dist"
+    "test-node": "npm run dist-test && mocha --no-colors --reporter tests/reporter tests/test-*.js",
+    "test-phantomjs": "npm run dist-test && gulp tests && phantomjs --web-security=false ./node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js ./tests/test.html ./tests/reporter.js",
+    "version": "npm dist"
   },
   "dependencies": {
+    "@types/node": "^10.3.2",
     "aes-js": "3.0.0",
     "bn.js": "^4.4.0",
     "elliptic": "6.3.3",
-    "hash.js": "^1.0.0",
-    "inherits": "2.0.1",
+    "hash.js": "1.1.3",
     "js-sha3": "0.5.7",
-    "scrypt-js": "2.0.3",
+    "scrypt-js": "2.0.4",
     "setimmediate": "1.0.4",
     "uuid": "2.0.1",
     "xmlhttprequest": "1.8.0"
   },
   "devDependencies": {
+    "browserify": "^16.2.3",
     "browserify-zlib": "^0.2.0",
-    "grunt": "^0.4.5",
-    "grunt-browserify": "^5.0.0",
-    "grunt-cli": "1.2.0",
-    "grunt-contrib-uglify": "^1.0.1",
-    "mocha": "^3.2.0",
+    "dts-bundle": "^0.7.3",
+    "eslint": "^5.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "ethereumjs-tx": "^1.3.5",
+    "ethereumjs-util": "^5.2.0",
+    "gulp": "^4.0.0",
+    "gulp-cli": "^2.0.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-typescript": "^5.0.0-alpha.1",
+    "gulp-uglify": "^3.0.0",
+    "mocha": "^5.2.0",
     "mocha-phantomjs-core": "2.1.2",
     "solc": "0.4.20",
-    "web3": "0.20.2"
+    "tsify": "^4.0.0",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.1",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0",
+    "web3-providers-http": "1.0.0-beta.35"
   },
-  "browser": {
-    "fs": "./tests/browser-fs.js",
-    "zlib": "browserify-zlib",
-    "./utils/base64.js": "./utils/browser-base64.js",
-    "./utils/random-bytes.js": "./utils/browser-random-bytes.js",
-    "./providers/ipc-provider.js": "./utils/empty.js",
-    "xmlhttprequest": "./providers/browser-xmlhttprequest.js"
-  },
+  "browser": "./dist/ethers.min.js",
   "keywords": [
     "ethereum",
+    "library",
     "wallet"
   ],
   "author": "Richard Moore <me@ricmoo.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/ethers-io/ethers-wallet.git"
+    "url": "git://github.com/ethers-io/ethers.js.git"
   },
   "license": "MIT"
 }

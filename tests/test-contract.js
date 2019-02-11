@@ -2,19 +2,16 @@
 
 var assert = require('assert');
 
-if (global.ethers) {
-    console.log('Using global ethers; ' + __filename);
-    var ethers = global.ethers;
-} else {
-    var ethers = require('..');
-}
+var utils = require('./utils');
+var ethers = utils.getEthers(__filename);
 
-var provider = ethers.providers.getDefaultProvider('ropsten');
+var provider = new ethers.providers.InfuraProvider('rinkeby');
 
 var contract = (function() {
     var data = require('./test-contract.json');
     return new ethers.Contract(data.contractAddress, data.interface, provider);
 })();
+
 
 function equals(name, actual, expected) {
     if (Array.isArray(expected)) {
@@ -27,7 +24,7 @@ function equals(name, actual, expected) {
 
     if (typeof(actual) === 'object') {
         if (expected.indexed) {
-            assert.ok(!!actual.indexed, 'index property has index - ' + name);
+            assert.ok(ethers.Contract.isIndexed(actual), 'index property has index - ' + name);
             if (expected.hash) {
                 assert.equal(actual.hash, expected.hash, 'index property with known hash matches - ' + name);
             }
@@ -43,18 +40,18 @@ function equals(name, actual, expected) {
 }
 
 function TestContractEvents() {
-    return ethers.providers.Provider.fetchJSON('https://api.ethers.io/api/v1/?action=triggerTest&address=' + contract.address).then(function(data) {
-        console.log('  Triggered Transaction Hash: ' + data.hash);
+    return ethers.utils.fetchJson('https://api.ethers.io/api/v1/?action=triggerTest&address=' + contract.address).then(function(data) {
+        console.log('  *** Triggered Transaction Hash: ' + data.hash);
 
         function waitForEvent(eventName, expected) {
             return new Promise(function(resolve, reject) {
-                contract['on' + eventName.toLowerCase()] = function() {
-                    //console.dir(this, { depth: null });
-                    //console.log(this.event);
-                    this.removeListener();
-                    equals(this.event, Array.prototype.slice.call(arguments), expected);
+                contract.on(eventName, function() {
+                    var args = Array.prototype.slice.call(arguments);
+                    var event = args.pop();
+                    event.removeListener();
+                    equals(event.event, args, expected);
                     resolve();
-                };
+                });
             });
         }
 
@@ -86,6 +83,7 @@ describe('Test Contract Objects', function() {
     });
 
     it('ABIv2 parameters and return types work', function() {
+        this.timeout(120000);
         var p0 = '0x06B5955A67D827CDF91823E3bB8F069e6c89c1D6';
         var p0_0f = '0x06B5955a67d827cDF91823e3bB8F069E6c89c1e5';
         var p0_f0 = '0x06b5955a67D827CDF91823e3Bb8F069E6C89c2C6';
@@ -93,20 +91,38 @@ describe('Test Contract Objects', function() {
         var p1_0f = 0x42 + 0x0f;
         var p1_f0 = 0x42 + 0xf0;
 
-        var posStruct = [p0, p1, [ p0, p1 ] ];
         var expectedPosStruct = [ p0_f0, p1_f0, [ p0_0f, p1_0f ] ];
-        return contract.testV2(posStruct).then(function(result) {
-            equals('position input', result, expectedPosStruct);
+
+        var seq = Promise.resolve();
+        [
+            [p0, p1, [ p0, p1 ] ],
+            { p0: p0, p1: p1, child: [ p0, p1 ] },
+            [ p0, p1, { p0: p0, p1: p1 } ],
+            { p0: p0, p1: p1, child: { p0: p0, p1: p1 } }
+        ].forEach(function(struct) {
+            seq = seq.then(function() {
+                return contract.testV2(struct).then(function(result) {
+                    equals('position input', result, expectedPosStruct);
+                    equals('keyword input p0', result.p0, expectedPosStruct[0]);
+                    equals('keyword input p1', result.p1, expectedPosStruct[1]);
+                    equals('keyword input child.p0', result.child.p0, expectedPosStruct[2][0]);
+                    equals('keyword input child.p1', result.child.p1, expectedPosStruct[2][1]);
+                });
+            });
         });
+
+        return seq;
     });
 
     it('collapses single argument solidity methods', function() {
+        this.timeout(120000);
         return contract.testSingleResult(4).then(function(result) {
             assert.equal(result, 5, 'single value returned');
         });
     });
 
     it('does not collapses multi argument solidity methods', function() {
+        this.timeout(120000);
         return contract.testMultiResult(6).then(function(result) {
             assert.equal(result[0], 7, 'multi value [0] returned');
             assert.equal(result[1], 8, 'multi value [1] returned');

@@ -1,16 +1,12 @@
 'use strict';
 
 var assert = require('assert');
-var web3 = require('web3');
+var Web3HttpProvider = require('web3-providers-http');
 
-if (global.ethers) {
-    console.log('Using global ethers; ' + __filename);
-    var ethers = global.ethers;
-} else {
-    var ethers = require('..');
-}
+var utils = require('./utils');
+var ethers = utils.getEthers(__filename);
 
-var providers = ethers.providers;
+//var providers = ethers.providers;
 var bigNumberify = ethers.utils.bigNumberify;
 var getAddress = ethers.utils.getAddress;
 
@@ -57,6 +53,7 @@ var blockchainData = {
             blockNumber: 0x3c92b5,
             contractAddress: null,
             cumulativeGasUsed: 0x1cca2e,
+            from: "0x18C6045651826824FEBBD39d8560584078d1b247",
             gasUsed:0x14bb7,
             logs: [
                 {
@@ -82,11 +79,12 @@ var blockchainData = {
                     transactionLogIndex: 0x1
                 }
             ],
-            "logsBloom": "0x00000000000000040000000000100000010000000000000040000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000200000010000000004000000000000000000000000000000000002000000000000000000000000400000000020000000000000000000000000000000000000004000000000000000000000000000000000000000000000000801000000000000000000000020000000000040000000040000000000000000002000000004000000000000000000000000000000000000000000000010000000000000000000000000000000000200000000000000000",
-            "root": "0x9b550a9a640ce50331b64504ef87aaa7e2aaf97344acb6ff111f879b319d2590",
-            "status": null,
-            "transactionHash": "0xc6fcb7d00d536e659a4559d2de29afa9e364094438fef3e72ba80728ce1cb616",
-            "transactionIndex": 0x39
+            logsBloom: "0x00000000000000040000000000100000010000000000000040000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000200000010000000004000000000000000000000000000000000002000000000000000000000000400000000020000000000000000000000000000000000000004000000000000000000000000000000000000000000000000801000000000000000000000020000000000040000000040000000000000000002000000004000000000000000000000000000000000000000000000010000000000000000000000000000000000200000000000000000",
+            root: "0x9b550a9a640ce50331b64504ef87aaa7e2aaf97344acb6ff111f879b319d2590",
+            status: null,
+            to: "0x6090A6e47849629b7245Dfa1Ca21D94cd15878Ef",
+            transactionHash: "0xc6fcb7d00d536e659a4559d2de29afa9e364094438fef3e72ba80728ce1cb616",
+            transactionIndex: 0x39,
         },
         transactionReceiptByzantium: {
             byzantium: true,
@@ -94,6 +92,7 @@ var blockchainData = {
             blockNumber: 0x444f76,
             contractAddress: null,
             cumulativeGasUsed: 0x15bfe7,
+            from: "0x18C6045651826824FEBBD39d8560584078d1b247",
             gasUsed: 0x1b968,
             logs: [
                 {
@@ -110,6 +109,7 @@ var blockchainData = {
             ],
             logsBloom: "0x00000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000200000000000000008000000000000000000000000000000000000000000000000000000000000000010000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000800000000000000000800000000000000000000000000000000000000",
             status:1,
+            to: "0xb90E64082D00437e65A76d4c8187596BC213480a",
             transactionHash: "0x7f1c6a58dc880438236d0b0a4ae166e9e9a038dbea8ec074149bd8b176332cac",
             transactionIndex: 0x1e
         }
@@ -174,6 +174,7 @@ var blockchainData = {
             blockNumber: 0x1564d8,
             contractAddress: null,
             cumulativeGasUsed: bigNumberify("0x80b9"),
+            from: "0xb346D5019EeafC028CfC01A5f789399C2314ae8D",
             gasUsed: bigNumberify("0x80b9"),
             logs: [
                 {
@@ -190,6 +191,7 @@ var blockchainData = {
             ],
             logsBloom: "0x00000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000010000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
             root: "0xf1c3506ab619ac1b5e8f1ca355b16d6b9a1b7436b2960b0e9ec9a91f4238b5cc",
+            to: "0x6fC21092DA55B392b045eD78F4732bff3C580e2c",
             transactionHash: "0x55c477790b105e69e98afadf0505cbda606414b0187356137132bf24945016ce",
             transactionIndex: 0x0
         },
@@ -199,6 +201,7 @@ var blockchainData = {
             blockNumber: 0x1e1e3b,
             contractAddress: null,
             cumulativeGasUsed: bigNumberify("0x4142f"),
+            from: "0xdc8F20170C0946ACCF9627b3EB1513CFD1c0499f",
             gasUsed: bigNumberify("0x1eb6d"),
             logs:[
                 {
@@ -215,10 +218,44 @@ var blockchainData = {
             ],
             logsBloom: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000080000000202000000",
             status: 1,
+            to: "0xB70560a43A9aBf6ea2016F40a3e84B8821E134c5",
             transactionHash: "0xf724f1d6813f13fb523c5f6af6261d06d41138dd094fff723e09fb0f893f03e6",
             transactionIndex: 0x2
         },
     },
+    goerli: {
+        balance: {
+            address: "0x58Bb4221245461E1d4cf886f18a01E3Df40Bd359",
+            balance: bigNumberify("6250000000000000000")
+        },
+        block3: {
+            hash: '0xd5daa825732729bb0d2fd187a1b888e6bfc890f1fc5333984740d9052afb2920',
+            parentHash: '0xe675f1362d82cdd1ec260b16fb046c17f61d8a84808150f5d715ccce775f575e',
+            number: 3,
+            timestamp: 1548947483,
+            difficulty: 2,
+            gasLimit: bigNumberify('10455073'),
+            gasUsed: bigNumberify('0'),
+            miner: '0x0000000000000000000000000000000000000000',
+            extraData: '0x506172697479205465636820417574686f7269747900000000000000000000002822e1b202411c38084d96c84302b8361ec4840a51cd2fad9cb4bd9921cad7e64bc2e5dc7b41f3f75b33358be3aec718cf4d4317ace940e01b3581a95c9259ac01',
+            transactions: []
+        },
+        transactionReceipt: {
+            blockHash: '0x2384e8e8bdcf6eb87ec7c138fa503ac34adb32cac817e4b35f14d4339eaa1993',
+            blockNumber: 47464,
+            byzantium: true,
+            contractAddress: null,
+            cumulativeGasUsed: bigNumberify(21000),
+            from: '0x8c1e1e5b47980D214965f3bd8ea34C413E120ae4',
+            gasUsed: bigNumberify(21000),
+            logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+            to: '0x58Bb4221245461E1d4cf886f18a01E3Df40Bd359',
+            transactionHash: '0xec8b1ac5d787f36c738cc7793fec606283b41f1efa69df4ae6b2a014dcd12797',
+            transactionIndex: 0,
+            logs: [],
+            status: 1
+        }
+    }
 }
 
 blockchainData['default'] = blockchainData.homestead;
@@ -258,21 +295,21 @@ function testProvider(providerName, networkName) {
         var provider = null;
         if (networkName === 'default') {
             if (providerName === 'getDefaultProvider') {
-                provider = providers.getDefaultProvider();
+                provider = ethers.getDefaultProvider();
             } else if (providerName === 'Web3Provider') {
-                var infuraUrl = (new providers.InfuraProvider()).url;
-                provider = new providers.Web3Provider(new web3.providers.HttpProvider(infuraUrl));
+                var infuraUrl = (new ethers.providers.InfuraProvider()).connection.url;
+                provider = new ethers.providers.Web3Provider(new Web3HttpProvider(infuraUrl));
             } else {
-                provider = new providers[providerName]();
+                provider = new ethers.providers[providerName]();
             }
         } else {
             if (providerName === 'getDefaultProvider') {
-                provider = providers.getDefaultProvider(networkName);
+                provider = ethers.getDefaultProvider(networkName);
             } else if (providerName === 'Web3Provider') {
-                var infuraUrl = (new providers.InfuraProvider(networkName)).url;
-                provider = new providers.Web3Provider(new web3.providers.HttpProvider(infuraUrl), networkName);
+                var infuraUrl = (new ethers.providers.InfuraProvider(networkName)).connection.url;
+                provider = new ethers.providers.Web3Provider(new Web3HttpProvider(infuraUrl), networkName);
             } else {
-                provider = new providers[providerName](networkName);
+                provider = new ethers.providers[providerName](networkName);
             }
         }
 
@@ -295,6 +332,7 @@ function testProvider(providerName, networkName) {
             //         assert(_owner.send(this.balance - 0.0000314159 ether));
             //     }
             //  }
+
             this.timeout(100000);
             var test = blockchainData[networkName].balance;
             return provider.getBalance(test.address).then(function(balance) {
@@ -305,6 +343,11 @@ function testProvider(providerName, networkName) {
         function testTransactionReceipt(expected) {
             var title = ('Receipt ' + expected.transactionHash.substring(0, 10) + ' - ');
             return provider.getTransactionReceipt(expected.transactionHash).then(function(receipt) {
+
+                // This changes with every block
+                assert.equal(typeof(receipt.confirmations), 'number', 'confirmations is a number');
+                delete receipt.confirmations;
+
                 for (var key in receipt) {
                     equals((title + key), receipt[key], expected[key]);
                 }
@@ -329,6 +372,14 @@ function testProvider(providerName, networkName) {
         function testTransaction(expected) {
             var title = ('Transaction ' + expected.hash.substring(0, 10) + ' - ');
             return provider.getTransaction(expected.hash).then(function(tx) {
+
+                // This changes with every block
+                assert.equal(typeof(tx.confirmations), 'number', 'confirmations is a number');
+                delete tx.confirmations;
+
+                assert.equal(typeof(tx.wait), 'function', 'wait is a function');
+                delete tx.wait
+
                 for (var key in tx) {
                     equals((title + key), tx[key], expected[key]);
                 }
@@ -360,24 +411,27 @@ function testProvider(providerName, networkName) {
     });
 }
 
-['default', 'homestead', 'ropsten', 'rinkeby', 'kovan'].forEach(function(networkName) {
+['default', 'homestead', 'ropsten', 'rinkeby', 'kovan', 'goerli'].forEach(function(networkName) {
     ['getDefaultProvider', 'InfuraProvider', 'EtherscanProvider', 'Web3Provider'].forEach(function(providerName) {
 
-        // HACK! Etherscan is being cloudflare heavy right now and I need
-        // to release a new version; temporarily turning off these tests
-        //console.log('WARNING: Test cases being skipped! Temporary. Please turn backon soon.');
-        //if (providerName === 'EtherscanProvider' && networkName !== 'homestead') { return; }
+        if (networkName === "goerli") {
+            if (providerName === "InfuraProvider" || providerName === "Web3Provider") {
+                return;
+            }
+        }
 
-        // HACK! INFURA is flakey on homestead right now and the test cases are failing
-        //console.log('WARNING: Test cases being skipped! Temporary. Please turn backon soon.');
-        //if (providerName === 'InfuraProvider' && networkName === 'homestead') { return; }
+        // @TODO: Remove this! Temporary because Etherscan is down
+        //if (providerName === 'EtherscanProvider') {
+        //    console.log("******** Remove this soon! Etherscan is having issues.");
+        //    return;
+        //}
 
         testProvider(providerName, networkName);
     });
 });
-
+/*
 function getDefaults(network, extra) {
-    var network = providers.networks[network];
+    var network = ethers.utils.getNetwork(network);
     var result = {
         chainId: network.chainId,
         ensAddress: (network.ensAddress ? getAddress(network.ensAddress): null),
@@ -389,7 +443,8 @@ function getDefaults(network, extra) {
     }
     return result;
 }
-
+*/
+/*
 describe('Test extra Etherscan operations', function() {
     var provider = new providers.EtherscanProvider();
     it('fethces the current price of ether', function() {
@@ -407,15 +462,16 @@ describe('Test extra Etherscan operations', function() {
         });
     });
 });
-
+*/
 describe('Test Basic Authentication', function() {
     // https://stackoverflow.com/questions/6509278/authentication-test-servers#16756383
 
-    var Provider = require('..').providers.Provider;
+    //var Provider = ethers.Provider;
 
     function test(name, url) {
         it('tests ' + name, function() {
-            return Provider.fetchJSON(url).then(function(data) {
+            this.timeout(20000);
+            return ethers.utils.fetchJson(url).then(function(data) {
                 assert.equal(data.authenticated, true, 'authenticates user');
             });
         });
@@ -437,15 +493,16 @@ describe('Test Basic Authentication', function() {
         url: 'http://httpbin.org/basic-auth/user/passwd',
         user: 'user',
         password: 'passwd',
-        forceInsecure: true
+        allowInsecure: true
     };
 
     test('secure url', secure);
     test('insecure url', insecureForced);
 
     it('tests insecure connections fail', function() {
+        this.timeout(20000);
         assert.throws(function() {
-            Provider.fetchJSON(insecure);
+            ethers.utils.fetchJson(insecure);
         }, function(error) {
             return (error.reason === 'basic authentication requires a secure https url');
         }, 'throws an exception for insecure connections');

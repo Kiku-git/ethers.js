@@ -5,10 +5,21 @@ var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
 
+var getEthers = require('./utils-ethers');
+
 var bigNumber = require('../utils/bignumber');
-var convert = require('../utils/convert');
-var keccak256 = require('../utils/keccak256');
+var convert = require('../utils/bytes');
+var keccak256 = require('../utils/keccak256').keccak256;
 var utf8 = require('../utils/utf8');
+
+var readFileSync = fs.readFileSync;
+if (!readFileSync) {
+    var data = require('./dist/tests.json');
+
+    readFileSync = function(filename) {
+        return Buffer.from(data[filename], 'base64');
+    }
+}
 
 /*
 function random(lowerRandomInterval, upperOpenInterval) {
@@ -37,7 +48,7 @@ function randomBytes(seed, lower, upper) {
     }
 
     var top = convert.arrayify(keccak256(result));
-    var percent = ((top[0] << 16) | (top[1] << 8) | top[2]) / 0x00ffffff;
+    var percent = ((top[0] << 16) | (top[1] << 8) | top[2]) / 0x01000000;
 
     return result.slice(0, lower + parseInt((upper - lower) * percent));
 }
@@ -48,7 +59,7 @@ function randomHexString(seed, lower, upper) {
 
 function randomNumber(seed, lower, upper) {
     var top = randomBytes(seed, 3);
-    var percent = ((top[0] << 16) | (top[1] << 8) | top[2]) / 0x00ffffff;
+    var percent = ((top[0] << 16) | (top[1] << 8) | top[2]) / 0x01000000;
     return lower + parseInt((upper - lower) * percent);
 }
 
@@ -95,10 +106,23 @@ function saveTests(tag, data) {
 
 function loadTests(tag) {
    var filename = path.resolve(__dirname, 'tests', tag + '.json.gz');
-   return JSON.parse(zlib.gunzipSync(fs.readFileSync(filename)));
+   return JSON.parse(zlib.gunzipSync(readFileSync(filename)));
 }
 
+function loadJson(filename) {
+   var filename = path.resolve(__dirname, 'tests', filename);
+   return JSON.parse(readFileSync(filename).toString());
+}
+
+function loadText(filename) {
+   var filename = path.resolve(__dirname, filename);
+   return readFileSync(filename).toString();
+}
+
+
 module.exports = {
+    getEthers: getEthers,
+
     randomBytes: randomBytes,
     randomHexString: randomHexString,
     randomNumber:randomNumber,
@@ -112,4 +136,7 @@ module.exports = {
 
     loadTests: loadTests,
     saveTests: saveTests,
+
+    loadJson: loadJson,
+    loadText: loadText,
 }
